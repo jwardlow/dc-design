@@ -1,1 +1,1 @@
-This is a collection of scripts that help make the design implementation workflow less work.
+This is a collection of scripts that automate various aspects of the Digital Commons design implementation workflow.
