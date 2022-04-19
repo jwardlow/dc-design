@@ -90,44 +90,24 @@ do shell script "scp -r " & pfolder & "/Assets/* demo:~/tmp/" & shortname & "/."
 -- In the Terminal window where we're logged in to demo, sudo as demo, change to the demo site's asset folder
 tell application "Terminal"
 	do script ("sudo su - demo") in demoTab
-	if c = "Site" then
-		do script ("cd $FILETREE/data/" & targetURL & "/assets") in demoTab
-	else
-		do script ("cd $FILETREE/data/journals/" & targetURL & "/" & shortname & "/assets") in demoTab
-	end if
+	my cdAssets()
 	-- check if directory exists, let us know if not
-	delay 5
 	set histText to history of demoTab
 	repeat until histText contains "demo@demo:/main/demo/doc/data/"
-		display dialog "Directory not found, change demo base url?"
-		set targetURL to text returned of (display dialog "Please enter the demo base url (from demo folder structure) (no http:// or ending /):" default answer "") as string
-		if c = "Site" then
-			do script ("cd $FILETREE/data/" & targetURL & "/assets") in demoTab
-		else
-			do script ("cd $FILETREE/data/journals/" & targetURL & "/" & shortname & "/assets") in demoTab
-		end if
-		delay 5
+		set targetURL to text returned of (display dialog "Directory not found, change demo base url?" default answer "") as string
+		my cdAssets()
 		set histText to history of demoTab
 	end repeat
 	
 	-- copy files to demo site from our temp demo folder, then update
 	do script ("cp /home/jwardlow/tmp/" & shortname & "/* .") in demoTab
-	if c = "Site" then
-		do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/") in demoTab
-	else
-		do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname) in demoTab
-	end if
-	-- check if update failed, let us know and try again if so
+	my updateSiteLevel()
 	delay 5
+	-- check if update failed, let us know and try again if so
 	set histText to history of demoTab
 	repeat until histText contains "Publish.publish"
-		display dialog "Update failed, change IR-level shortname?"
-		set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
-		if c = "Site" then
-			do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/") in demoTab
-		else
-			do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname) in demoTab
-		end if
+		set irShortname to text returned of (display dialog "Update failed, change IR-level shortname?" default answer "") as string
+		my updateSiteLevel()
 		delay 5
 		set histText to history of demoTab
 	end repeat
@@ -151,11 +131,30 @@ repeat
 		do shell script "scp -r " & pfolder & "/Assets/" & template & " demo:~/tmp/" & shortname & "/."
 		tell application "Terminal"
 			do script ("cp /home/jwardlow/tmp/" & shortname & "/" & template & " .") in demoTab
-			if c = "Site" then
-				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/") in demoTab
-			else
-				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname) in demoTab
-			end if
+			my updateSiteLevel()
 		end tell
 	end if
 end repeat
+
+on cdAssets()
+	global c, targetURL, demoTab, shortname
+	tell application "Terminal"
+		if c = "Site" then
+			do script ("cd $FILETREE/data/" & targetURL & "/assets") in demoTab
+		else
+			do script ("cd $FILETREE/data/journals/" & targetURL & "/" & shortname & "/assets") in demoTab
+		end if
+		delay 5
+	end tell
+end cdAssets
+
+on updateSiteLevel()
+	global c, irShortname, shortname, demoTab
+	tell application "Terminal"
+		if c = "Site" then
+			do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/") in demoTab
+		else
+			do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname) in demoTab
+		end if
+	end tell
+end updateSiteLevel
