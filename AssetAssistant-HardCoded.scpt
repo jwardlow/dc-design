@@ -63,16 +63,12 @@ end if
 -- Begin code to upload assets. Ask for demo base URL and shortname, set as "targetURL" and "shortname"
 set targetURL to text returned of (display dialog "Please enter the demo base url (from demo folder structure) (no http:// or ending /):" default answer "") as string
 
--- If we're implementing a journal or event, ask for the site-level shortname so we can update later
-try
-	irShortname --if we just set up a header-only project folder, we already have irShortname
-on error
-	if c = "Site" then
-		set irShortname to shortname
-	else
-		set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
-	end if
-end try
+-- If we're implementing a not-header-only journal or event, ask for the site-level shortname so we can update later
+if c ≠ "Site" and headerOnly = "No" then
+	set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
+else if c = "Site" then
+	set irShortname to shortname
+end if
 
 -- Set up a path to the asset folder on local machine - customize this for whatever folder structure you use to hold project files
 set pfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname
