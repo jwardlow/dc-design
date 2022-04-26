@@ -63,8 +63,8 @@ end if
 -- Begin code to upload assets. Ask for demo base URL and shortname, set as "targetURL" and "shortname"
 set targetURL to text returned of (display dialog "Please enter the demo base url (from demo folder structure) (no http:// or ending /):" default answer "") as string
 
--- If we're implementing a not-header-only journal or event, ask for the site-level shortname so we can update later
-if c ≠ "Site" and headerOnly = "No" then
+-- If we're implementing a journal or event, ask for the site-level shortname so we can update later
+if c ≠ "Site" and task = "Upload assets" then
 	set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
 else if c = "Site" then
 	set irShortname to shortname
