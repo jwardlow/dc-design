@@ -1,6 +1,6 @@
 -- Assign variables for IR shortname and production URL
 set shortname to text returned of (display dialog "Please enter the IR shortname:" default answer "") as string
-set targetURL to text returned of (display dialog "Please enter the production URL (no http:// or ending /):" default answer "") as string
+set targetURL to text returned of (display dialog "Please enter the demo base url (no http:// or ending /):" default answer "") as string
 
 tell application "Terminal"
 	-- On schedule_tasks, make a directory to which to upload assets
@@ -9,26 +9,37 @@ tell application "Terminal"
 	--check for login failure, option to correct
 	set histText to history of schedTab
 	repeat until histText contains "ubuntu@"
+		display dialog "Login failed, time to fix known_hosts."
 		set lineLocation to offset of "Offending ECDSA key" in histText
 		set s to lineLocation + 56
 		set e to lineLocation + 58
 		set lineNo to characters s thru e of histText as string
 		if character 3 of lineNo is " " then
-			set lineNo to characters 1 thru 2 of the_time_string as string
+			set lineNo to characters 1 thru 2 of lineNo as string
 		end if
 		activate
 		do script ("vi +" & lineNo & " ~/.ssh/known_hosts")
-		display dialog "Login failed, time to fix known_hosts."
-		do script ("schedtasks") in schedTab
 		delay 10
+		do script ("schedtasks") in schedTab
+		delay 8
 		set histText to history of schedTab
 	end repeat
+	
 	do script ("cd /var/log/sequoia/application/") in schedTab
 	do script ("mkdir ./" & shortname & "-assets") in schedTab
 	
 	-- List files currently in the demo site's asset folder, so we can download any we don't already have saved locally
 	set demoTab to do script ("demo")
 	do script ("cd $FILETREE/data/" & targetURL & "/assets") in demoTab
+	-- check if directory exists, let us know if not
+	delay 8
+	set histText to history of demoTab
+	repeat until histText contains "demo:/main/demo/doc/data/"
+		set targetURL to text returned of (display dialog "Directory not found, change demo base url?" default answer "") as string
+		do script ("cd $FILETREE/data/" & targetURL & "/assets") in demoTab
+		delay 5
+		set histText to history of demoTab
+	end repeat
 	do script ("find . -type f | sort -h") in demoTab
 	activate
 end tell
