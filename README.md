@@ -1,1 +1,1 @@
-This is a collection of scripts that automate various aspects of the Digital Commons design implementation workflow.
+This is a collection of scripts that automate various aspects of the Digital Commons design implementation workflow. They've been saved here as .scpt files to improve display in GitHub, but can be saved to your Mac as .app files via macOS' built-in Script Editor if you would like to use them as standalone applications.

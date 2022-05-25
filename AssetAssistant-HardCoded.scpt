@@ -64,9 +64,9 @@ end if
 set targetURL to text returned of (display dialog "Please enter the demo base url (from demo folder structure) (no http:// or ending /):" default answer "") as string
 
 -- If we're implementing a journal or event, ask for the site-level shortname so we can update later
-if c ≠ "Site" and task = "Upload assets" then
+if c ≠ "Site" then
 	set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
-else if c = "Site" then
+else
 	set irShortname to shortname
 end if
 
@@ -79,7 +79,7 @@ tell application "Terminal"
 	delay 10
 	do script ("mkdir ~/tmp/" & shortname) in demoTab
 end tell
-
+delay 10
 -- scp assets from local asset folder to temp demo folder
 do shell script "scp -r " & pfolder & "/Assets/* demo:~/tmp/" & shortname & "/."
 
