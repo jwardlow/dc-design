@@ -1,3 +1,9 @@
+(*
+This script automates most of the workflow for a brand-new DC site roll.
+It can move design assets between our demonstration and production instances.
+File paths need to be customized to your Mac before using.
+*)
+
 -- Assign variables for IR shortname and production URL
 set shortname to text returned of (display dialog "Please enter the IR shortname:" default answer "") as string
 set targetURL to text returned of (display dialog "Please enter the demo base url (no http:// or ending /):" default answer "") as string

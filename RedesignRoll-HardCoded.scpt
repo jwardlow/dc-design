@@ -1,3 +1,9 @@
+(*
+This script automates most of the workflow for a redesign roll.
+It can move design assets between our demonstration and production instances.
+File paths need to be customized to your Mac before using.
+*)
+
 -- Ask what type of context we're implementing, set the answer as "c"
 set c to (choose from list {"Site", "Journal", "Event"} with prompt "What type of context?" default items "Site")
 

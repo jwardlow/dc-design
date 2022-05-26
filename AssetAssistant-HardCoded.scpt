@@ -1,3 +1,10 @@
+(*
+This script automates the more repetitive portions of the DC design implementation workflow.
+It can set up a new project folder on your Mac and copy templates to use in the implementation,
+and then upload assets to a demo site once they’re ready. The file paths and username
+need to be customized to your Mac before using.
+*)
+
 -- Ask what type of context we're implementing, set the answer as "c"
 set c to (choose from list {"Site", "Journal", "Event"} with prompt "What type of context?" default items "Site")
 
