@@ -163,21 +163,13 @@ tell application "Terminal"
 	delay 10
 	my updateSiteLevel()
 	delay 10
-	-- check if update failed, let us know and try again if so
-	--	set histText to history of demoTab
-	--	repeat until histText contains "Publish.publish"
-	--		set irShortname to text returned of (display dialog "Update failed, change IR-level shortname?" default answer "") as string
-	--		my updateSiteLevel()
-	--		delay 5
-	--		set histText to history of demoTab
-	--	end repeat
 	do script ("rm " & c & "Configs.txt") in demoTab
 	do script ("rm " & c & "URL.txt") in demoTab
 end tell
 
 -- Now that the initial batch of assets is in place, provide options to make changes as we work on the design
 repeat
-	set btnReturned to button returned of (display dialog "Upload in progress! Upload a new version?" buttons {"ir-local.css", "Something else", "All done"} cancel button "All done")
+	set btnReturned to button returned of (display dialog "Upload in progress! Upload a new version?" buttons {"ir-local.css", "Something else", "All done"})
 	if btnReturned = "ir-local.css" then
 		do shell script "scp -r " & pfolder & "/Assets/ir-local.css demo:~/tmp/" & shortname & "/."
 		tell application "Terminal"
@@ -188,13 +180,19 @@ repeat
 				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://demo." & irShortname & ".bepress.com/" & shortname) in demoTab
 			end if
 		end tell
-	else
+	else if btnReturned = "Something else" then
 		set template to text returned of (display dialog "Enter a file name to upload:" default answer "") as string
 		do shell script "scp -r " & pfolder & "/Assets/" & template & " demo:~/tmp/" & shortname & "/."
 		tell application "Terminal"
 			do script ("cp /home/jwardlow/tmp/" & shortname & "/" & template & " .") in demoTab
 			my updateSiteLevel()
 		end tell
+	else if btnReturned = "All done" then
+		display dialog "Hi CS,
+
+This site should be all set: DEMO URL
+
+Please take a moment to look over the design and make sure everything looks ok. If you have any questions or concerns, let me know. Otherwise, feel free to pass it along to the client!"
 	end if
 end repeat
 
