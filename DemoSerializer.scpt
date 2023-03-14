@@ -1,5 +1,5 @@
 (* Automates the use of context-copier.pl for serializing between demo and live sites.
-Based on original work by Stephen Fisk with a few changes for my personal preferences. *)
+Based on original work by Stephen Fisk. *)
 
 display dialog "Please enter a URL to archive" default answer ""
 set archive_url to text returned of the result as string
@@ -42,6 +42,8 @@ end tell
 
 if histText contains "A backup of original configuration" then
 	display dialog "Hi CS, the live site should be good to go (may need to hard-refresh): " & target_url
+else if histText contains "is not a valid context" then
+	display dialog "Hi CS, I’m not seeing a journal structure at " & target_url & ", can you pass this back when that’s ready? TIA!"
 else
 	tell application "Terminal"
 		activate
