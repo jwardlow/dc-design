@@ -28,8 +28,19 @@ tell application "Terminal"
 	do script ("rm ~/tmp/" & tmp_name & ".serialized.tar.gz") in schedTab
 end tell
 
+set mdc_sandbox to findAndReplaceInText(archive_url, tmp_name, "/cgi/metadata_config.cgi?context=" & tmp_name)
+
+set mdc_live to findAndReplaceInText(target_url, tmp_name, "/cgi/metadata_config.cgi?context=" & tmp_name)
+
+tell application "Google Chrome"
+	open location mdc_sandbox
+	open location mdc_live
+end tell
+
 if histText contains "A backup of original configuration" then
-	display dialog "Hi CS, the live site should be good to go (may need to hard-refresh): " & target_url
+	display dialog "Check metadata config, copy if necessary.
+	
+	Hi CS, the live site should be good to go (may need to hard-refresh): " & target_url
 else if histText contains "is not a valid context" then
 	display dialog "Hi CS, I’m not seeing a journal structure at " & target_url & ", can you pass this back when that’s ready? TIA!"
 else
@@ -37,3 +48,12 @@ else
 		activate
 	end tell
 end if
+
+on findAndReplaceInText(theText, theSearchString, theReplacementString)
+	set AppleScript's text item delimiters to theSearchString
+	set theTextItems to every text item of theText
+	set AppleScript's text item delimiters to theReplacementString
+	set theText to theTextItems as string
+	set AppleScript's text item delimiters to ""
+	return theText
+end findAndReplaceInText
