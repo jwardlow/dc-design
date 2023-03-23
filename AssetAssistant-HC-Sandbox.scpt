@@ -39,9 +39,9 @@ if task = "Make new folder" then
 	
 	-- Set up a path to the "templates" folder for the appropriate context type. Everything in the templates folder will be copied into the new project folder, customize as desired
 	if c ≠ "Site" and headerOnly = "Yes" then
-		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates-header-only/"
+		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates-header-only-sandbox/"
 	else
-		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates/"
+		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates-sandbox/"
 	end if
 	
 	-- This variable will be used for renaming in case there's already a folder with the name we want to use, customize as desired
@@ -103,7 +103,7 @@ tell application "Terminal"
 	do script ("mkdir ./" & shortname & "-assets") in schedTab
 end tell
 delay 10
--- scp assets from local asset folder to temp demo folder
+-- scp assets from local asset folder to temp folder
 do shell script "scp -r " & pfolder & "/Assets/* schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
 
 -- In the Terminal window where we're logged in to schedtasks, log in to sequoia, change to the sandbox site's asset folder
@@ -174,9 +174,9 @@ repeat
 		tell application "Terminal"
 			do script ("cp " & tmpPath & "ir-local.css .") in schedTab
 			if c = "Site" then
-				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://demo." & irShortname & ".bepress.com/") in schedTab
+				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://" & targetURL) in schedTab
 			else
-				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://demo." & irShortname & ".bepress.com/" & shortname) in schedTab
+				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://" & targetURL & "/" & shortname) in schedTab
 			end if
 		end tell
 	else if btnReturned = "Something else" then
