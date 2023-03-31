@@ -24,30 +24,15 @@ else
 	set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
 end if
 
+-- Set up a path to the project folder where we'll find & replace the URLs in the docs that make set_config.pl work - customize this for whatever folder structure you use to hold project files
+set pfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname
+-- Find & replace those URLs
+do shell script "find " & pfolder & " -type f -print0 | xargs -0 sed -i '' 's/demo..*.bepress.com/" & targetURL & "/g'"
+
 tell application "Terminal"
 	-- On schedule_tasks, make a directory to which to upload assets
 	set schedTab to do script ("schedtasks")
 	delay 8
-	
-	-- check for login failure, option to correct
-	set histText to history of schedTab
-	repeat until histText contains "ubuntu@"
-		display dialog "Login failed, time to fix known_hosts."
-		set lineLocation to offset of "Offending ECDSA key" in histText
-		set s to lineLocation + 56
-		set e to lineLocation + 58
-		set lineNo to characters s thru e of histText as string
-		if character 3 of lineNo is " " then
-			set lineNo to characters 1 thru 2 of lineNo as string
-		end if
-		activate
-		do script ("vi +" & lineNo & " ~/.ssh/known_hosts")
-		delay 10
-		do script ("schedtasks") in schedTab
-		delay 8
-		set histText to history of schedTab
-	end repeat
-	
 	do script ("cd /var/log/sequoia/application/") in schedTab
 	do script ("mkdir ./" & shortname & "-assets") in schedTab
 	do script ("sequoia") in schedTab
@@ -106,17 +91,6 @@ if yn is "Yes" then
 	display dialog "Move files from Downloads to local assets folder. Click OK to proceed."
 end if
 
-tell application "Google Chrome"
-	if c = "Site" then
-		open location "http://demo." & irShortname & ".bepress.com/cgi/user_config.cgi"
-		open location "https://" & targetURL & "/cgi/user_config.cgi"
-	else
-		open location "http://demo." & irShortname & ".bepress.com/cgi/user_config.cgi?context=" & shortname
-		open location "https://" & targetURL & "/cgi/user_config.cgi?context=" & shortname
-	end if
-end tell
-display dialog "Copy the design configs from demo to live. Click OK to proceed."
-
 -- Once all needed assets are saved locally, copy from local machine to sequoia
 do shell script "scp -r /Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname & "/Assets/* schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
 
@@ -124,18 +98,58 @@ do shell script "scp -r /Users/wardlowj/Design/Implementations/" & c & "s/" & c 
 tell application "Terminal"
 	my cdSchedAssets()
 	do script ("cp /usr/bepress/production/log/" & shortname & "-assets/* .") in schedTab
+	do script ("rm " & c & "Configs.txt") in schedTab
+	do script ("rm " & c & "URL.txt") in schedTab
 	do script ("cd $FILETREE/bin") in schedTab
 	if c = "Site" then
 		do script ("./update.pl -template=ir-local.css http://" & targetURL) in schedTab
 		do script ("./update.pl -template=ir-custom.css http://" & targetURL) in schedTab
 		do script ("./update.pl -template=index.html http://" & targetURL) in schedTab
-		do script ("python3 update-activity-by-year-pages.py") in schedTab
 	else
 		do script ("./update.pl -template=ir-local.css http://" & targetURL & "/" & shortname) in schedTab
 		do script ("./update.pl -template=ir-custom.css http://" & targetURL & "/" & shortname) in schedTab
 		do script ("./update.pl -template=index.html http://" & targetURL & "/" & shortname) in schedTab
 	end if
 end tell
+
+--Set simple configs
+set nav to (choose from list {"Above", "Below", "Hidden"} with prompt "Nav bar position?" default items "Below") as string
+
+set sidebar to button returned of (display dialog "Sidebar position?" buttons {"Left", "Right"}) as string
+
+if c = "Journal" then
+	set support_coverart to button returned of (display dialog "Enable issue cover art?" buttons {"Yes", "No"}) as string
+	set intro_above to button returned of (display dialog "Display intro text above cover art?" buttons {"Yes", "No"}) as string
+	set publish_by_issue to button returned of (display dialog "Publish by closing issues?" buttons {"Yes", "No"}) as string
+end if
+
+tell application "Terminal"
+	do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "Configs.txt") in schedTab
+	if nav = "Below" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='NAV_UNDER' -VALUE=1") in schedTab
+	else if nav = "Hidden" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='hide_nav' -VALUE=1") in schedTab
+	end if
+	
+	if sidebar = "Left" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='HIDE_IR_SIDEBAR_RIGHT' -VALUE=1") in schedTab
+	end if
+	
+	if c = "Journal" and support_coverart = "Yes" then
+		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='support_coverart' -VALUE=1") in schedTab
+	end if
+	if c = "Journal" and intro_above = "Yes" then
+		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='intro_above_image' -VALUE=1") in schedTab
+	end if
+	if c = "Journal" and publish_by_issue = "Yes" then
+		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='publish_by_issue' -VALUE=1") in schedTab
+	end if
+	
+	if c = "Site" then
+		do script ("python3 update-activity-by-year-pages.py") in schedTab
+	end if
+end tell
+
 
 tell application "Google Chrome"
 	if c = "Site" then
