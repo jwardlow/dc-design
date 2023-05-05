@@ -170,13 +170,13 @@ end tell
 repeat
 	set btnReturned to button returned of (display dialog "Upload in progress! Upload a new version?" buttons {"ir-local.css", "Something else", "All done"})
 	if btnReturned = "ir-local.css" then
-		do shell script "scp -r " & pfolder & " schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
+		do shell script "scp " & pfolder & "/Assets/ir-local.css schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
 		tell application "Terminal"
 			do script ("cp " & tmpPath & "ir-local.css .") in schedTab
 			if c = "Site" then
-				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://" & targetURL) in schedTab
+				do script ("$FILETREE/bin/update.pl http://" & targetURL & "-template=ir-local.css") in schedTab
 			else
-				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://" & targetURL & "/" & shortname) in schedTab
+				do script ("$FILETREE/bin/update.pl http://" & targetURL & "/" & shortname & "-template=ir-local.css") in schedTab
 			end if
 		end tell
 	else if btnReturned = "Something else" then

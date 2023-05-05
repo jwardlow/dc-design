@@ -175,9 +175,9 @@ repeat
 		tell application "Terminal"
 			do script ("cp /home/jwardlow/tmp/" & shortname & "/ir-local.css .") in demoTab
 			if c = "Site" then
-				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://demo." & irShortname & ".bepress.com/") in demoTab
+				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/ -template=ir-local.css") in demoTab
 			else
-				do script ("$FILETREE/bin/update.pl -template=ir-local.css http://demo." & irShortname & ".bepress.com/" & shortname) in demoTab
+				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname & "-template=ir-local.css") in demoTab
 			end if
 		end tell
 	else if btnReturned = "Something else" then
@@ -192,7 +192,7 @@ repeat
 
 This site should be all set: DEMO URL
 
-Please take a moment to look over the design and make sure everything looks ok. If you have any questions or concerns, let me know. Otherwise, feel free to pass it along to the client!"
+Please take a moment to look over the design and make sure everything looks ok. If you have any questions or concerns, let me know. Otherwise, feel free to pass it along to the client!" buttons {"great job!"} cancel button "great job!"
 	end if
 end repeat
 
