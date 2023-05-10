@@ -174,9 +174,9 @@ repeat
 		tell application "Terminal"
 			do script ("cp " & tmpPath & "ir-local.css .") in schedTab
 			if c = "Site" then
-				do script ("$FILETREE/bin/update.pl http://" & targetURL & "-template=ir-local.css") in schedTab
+				do script ("$FILETREE/bin/update.pl http://" & targetURL & " -template=ir-local.css") in schedTab
 			else
-				do script ("$FILETREE/bin/update.pl http://" & targetURL & "/" & shortname & "-template=ir-local.css") in schedTab
+				do script ("$FILETREE/bin/update.pl http://" & targetURL & "/" & shortname & " -template=ir-local.css") in schedTab
 			end if
 		end tell
 	else if btnReturned = "Something else" then
