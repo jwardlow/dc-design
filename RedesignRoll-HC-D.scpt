@@ -136,13 +136,13 @@ tell application "Terminal"
 	end if
 	
 	if c = "Journal" and support_coverart = "Yes" then
-		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='support_coverart' -VALUE=1") in schedTab
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='support_coverart' -VALUE=1") in schedTab
 	end if
 	if c = "Journal" and intro_above = "Yes" then
-		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='intro_above_image' -VALUE=1") in schedTab
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='intro_above_image' -VALUE=1") in schedTab
 	end if
 	if c = "Journal" and publish_by_issue = "Yes" then
-		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='publish_by_issue' -VALUE=1") in schedTab
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='publish_by_issue' -VALUE=1") in schedTab
 	end if
 	
 	if c = "Site" then
