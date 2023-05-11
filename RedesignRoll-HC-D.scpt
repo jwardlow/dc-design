@@ -28,6 +28,7 @@ end if
 set pfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname
 -- Find & replace those URLs
 do shell script "find " & pfolder & " -type f -print0 | xargs -0 sed -i '' 's/demo..*.bepress.com/" & targetURL & "/g'"
+do shell script "open " & pfolder
 
 tell application "Terminal"
 	-- On schedule_tasks, make a directory to which to upload assets
@@ -147,17 +148,6 @@ tell application "Terminal"
 	
 	if c = "Site" then
 		do script ("python3 update-activity-by-year-pages.py") in schedTab
-	end if
-end tell
-
-
-tell application "Google Chrome"
-	if c = "Site" then
-		open location "http://demo." & irShortname & ".bepress.com/"
-		open location "https://" & targetURL
-	else
-		open location "http://demo." & irShortname & ".bepress.com/" & shortname
-		open location "https://" & targetURL & "/" & shortname
 	end if
 end tell
 

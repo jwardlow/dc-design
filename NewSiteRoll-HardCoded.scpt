@@ -1,19 +1,27 @@
 (*
 This script automates most of the workflow for a brand-new DC site roll.
-It can move design assets between our demonstration and production instances.
+It can move design assets between our demonstration and production instances,
+and set simple configurations using template documents on your Mac.
 File paths need to be customized to your Mac before using.
 *)
 
 -- Assign variables for IR shortname and production URL
 set shortname to text returned of (display dialog "Please enter the IR shortname:" default answer "") as string
 set targetURL to text returned of (display dialog "Please enter the demo base url (no http:// or ending /):" default answer "") as string
+set liveURL to text returned of (display dialog "Please enter the live site url (no http:// or ending /):" default answer "") as string
+
+-- Set up a path to the project folder where we'll find & replace the URLs in the docs that make set_config.pl work - customize this for whatever folder structure you use to hold project files
+set pfolder to "/Users/wardlowj/Design/Implementations/Sites/Site-designs/" & shortname
+-- Find & replace those URLs
+do shell script "find " & pfolder & " -type f -print0 | xargs -0 sed -i '' 's/demo..*.bepress.com/" & liveURL & "/g'"
+--open pfolder
 
 tell application "Terminal"
 	-- On schedule_tasks, make a directory to which to upload assets
 	set schedTab to do script ("schedtasks")
 	delay 10
 	--check for login failure, option to correct
-	set histText to history of schedTab
+	(*	set histText to history of schedTab
 	repeat until histText contains "ubuntu@"
 		display dialog "Login failed, time to fix known_hosts."
 		set lineLocation to offset of "Offending ECDSA key" in histText
@@ -29,7 +37,7 @@ tell application "Terminal"
 		do script ("schedtasks") in schedTab
 		delay 8
 		set histText to history of schedTab
-	end repeat
+	end repeat *)
 	
 	do script ("cd /var/log/sequoia/application/") in schedTab
 	do script ("mkdir ./" & shortname & "-assets") in schedTab
@@ -73,8 +81,47 @@ do shell script "scp -r /Users/wardlowj/Design/Implementations/Sites/Site-design
 -- Log into sequoia and copy files into production FILETREE
 tell application "Terminal"
 	do script ("sequoia") in schedTab
+	delay 10
 	do script ("cd $FILETREE/data/" & targetURL & "/assets") in schedTab
+	delay 10
+	-- check if directory exists, let us know if not
+	set histText to history of schedTab
+	repeat until histText contains "production@schedule:/srv/sequoia"
+		set targetURL to text returned of (display dialog "Directory not found, change live base url?" default answer "") as string
+		do script ("cd $FILETREE/data/" & targetURL & "/assets") in schedTab
+		delay 10
+		set histText to history of schedTab
+	end repeat
+	
 	do script ("cp /usr/bepress/production/log/" & shortname & "-assets/* .") in schedTab
 end tell
 
-display dialog "Assets in place! To finish:" & return & "1. Set configs on live site to match demo" & return & "2. Go to advanced settings, change 'Is Element Visible?' to 'Yes'" & return & "3. Update the site" & return & "4. Enable SSL (if it's not already)" & return & "5. Assign back to the CSer!"
+--Set simple configs
+set nav to (choose from list {"Above", "Below", "Hidden"} with prompt "Nav bar position?" default items "Below") as string
+
+set sidebar to button returned of (display dialog "Sidebar position?" buttons {"Left", "Right"}) as string
+
+tell application "Terminal"
+	do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/SiteConfigs.txt") in schedTab
+	do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/SiteURL.txt -CONFIG='invisible' -VALUE=0") in schedTab
+	if nav = "Below" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/SiteURL.txt -CONFIG='NAV_UNDER' -VALUE=1") in schedTab
+	else if nav = "Hidden" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/SiteURL.txt -CONFIG='hide_nav' -VALUE=1") in schedTab
+	end if
+	
+	if sidebar = "Left" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/SiteURL.txt -CONFIG='HIDE_IR_SIDEBAR_RIGHT' -VALUE=1") in schedTab
+	end if
+	do script ("$FILETREE/bin/update.pl http://" & liveURL) in schedTab
+	
+	do script ("rm SiteConfigs.txt") in schedTab
+	do script ("rm SiteURL.txt") in schedTab
+	
+end tell
+
+tell application "Google Chrome"
+	open location "https://" & liveURL & "/cgi/config.cgi"
+end tell
+
+display dialog "Assets in place! To finish:" & return & "1. Enable SSL (if it's not already)" & return & "2. Hi CS, the live site should be good to go (may need to hard-refresh:" & liveURL

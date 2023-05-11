@@ -28,6 +28,7 @@ end if
 set pfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname
 -- Find & replace those URLs
 do shell script "find " & pfolder & " -type f -print0 | xargs -0 sed -i '' 's/" & irShortname & "-sandbox.digital-commons.com/" & targetURL & "/g'"
+do shell script "open " & pfolder
 
 tell application "Terminal"
 	set schedTab to do script ("schedtasks")
