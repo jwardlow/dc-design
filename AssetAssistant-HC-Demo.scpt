@@ -177,7 +177,7 @@ repeat
 			if c = "Site" then
 				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/ -template=ir-local.css") in demoTab
 			else
-				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname & "-template=ir-local.css") in demoTab
+				do script ("$FILETREE/bin/update.pl http://demo." & irShortname & ".bepress.com/" & shortname & " -template=ir-local.css") in demoTab
 			end if
 		end tell
 	else if btnReturned = "Something else" then
