@@ -27,7 +27,7 @@ end if
 -- Set up a path to the project folder where we'll find & replace the URLs in the docs that make set_config.pl work - customize this for whatever folder structure you use to hold project files
 set pfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname
 -- Find & replace those URLs
-do shell script "find " & pfolder & " -type f -print0 | xargs -0 sed -i '' 's/demo..*.bepress.com/" & targetURL & "/g'"
+do shell script "find " & pfolder & " -type f -print0 | xargs -0 sed -i '' 's|demo.*.bepress.com|" & targetURL & "|g'"
 do shell script "open " & pfolder
 
 tell application "Terminal"
