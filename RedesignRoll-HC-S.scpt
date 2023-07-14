@@ -50,6 +50,9 @@ tell application "Terminal"
 	do script ("find . -maxdepth 1 -type f -name \"*.*\" | sort") in schedTab
 	my cdSandboxAssets()
 	do script ("find . -maxdepth 1 -type f -name \"*.*\" | sort") in schedTab
+	delay 5
+	do script ("ls -ltr") in schedTab
+	delay 5
 	activate
 end tell
 
@@ -63,9 +66,6 @@ end tell
 display dialog "Save lists of sandbox and live-site assets. De-dupe, make a list of assets to copy to live, then click OK to continue."
 
 tell application "Terminal"
-	do script ("ls -ltr") in schedTab
-	delay 5
-	activate
 	set enteredAssets to the text returned of (display dialog "Enter file names to copy, separated by commas and spaces:" default answer "")
 	-- This bit with oldDels is good practice because "AppleScript's text item delimiters" are a system-wide setting - if changed, will change in all other scripts running on your Mac
 	set oldDels to AppleScript's text item delimiters
@@ -108,7 +108,9 @@ tell application "Terminal"
 	
 	--tell application "Terminal"
 	do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "Configs.txt") in schedTab
-	if nav = "Below" then
+	if nav = "Above" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='NAV_UNDER' -VALUE=0") in schedTab
+	else if nav = "Below" then
 		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='NAV_UNDER' -VALUE=1") in schedTab
 	else if nav = "Hidden" then
 		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='hide_nav' -VALUE=1") in schedTab
