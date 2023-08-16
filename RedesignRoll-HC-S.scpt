@@ -21,7 +21,7 @@ set targetURL to text returned of (display dialog "Please enter the production U
 if c = "Site" then
 	set irShortname to shortname
 else
-	set irShortname to text returned of (display dialog "Please enter the IR-level shortname:" default answer "") as string
+	set irShortname to text returned of (display dialog "Please enter the IR-level shortname (the XXXX in XXXX-sandbox.digital-commons.com:)" default answer "") as string
 end if
 
 -- Set up a path to the project folder where we'll find & replace the URLs in the docs that make set_config.pl work - customize this for whatever folder structure you use to hold project files
