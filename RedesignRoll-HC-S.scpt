@@ -7,6 +7,11 @@ File paths need to be customized to your Mac before using.
 -- Ask what type of context we're implementing, set the answer as "c"
 set c to (choose from list {"Site", "Journal", "Event"} with prompt "What type of context?" default items "Site")
 
+-- Specify header-only designs so we can copy a different set of templates for them
+if c ≠ "Site" then
+	set headerOnly to button returned of (display dialog "Header-only?" buttons {"Yes", "No"}) as string
+end if
+
 -- Make the cancel button work
 if c = false then
 	error number -128
@@ -57,7 +62,12 @@ tell application "Terminal"
 end tell
 
 -- upload files for setting simple configs
-do shell script "scp -r /Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname & "/Assets/" & c & "Configs.txt /Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname & "/Assets/" & c & "URL.txt schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
+
+if c ≠ "Site" and headerOnly = "Yes" then
+	do shell script "scp -r /Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname & "/Assets/" & c & "URL.txt schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
+else
+	do shell script "scp -r /Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname & "/Assets/" & c & "Configs.txt /Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-designs/" & shortname & "/Assets/" & c & "URL.txt schedule_task.production.bepress.com:/var/log/sequoia/application/" & shortname & "-assets/."
+end if
 
 tell application "Google Chrome"
 	open location "http://textmechanic.com/text-tools/basic-text-tools/remove-duplicate-lines/"
@@ -81,8 +91,7 @@ tell application "Terminal"
 			do script "cp /srv/sequoia/main/data/journals/" & irShortname & "-sandbox.digital-commons.com/" & shortname & "/assets/" & theCurrentListItem & " ." in schedTab
 		end if
 	end repeat
-	--	do script ("rm " & c & "Configs.txt") in schedTab
-	--	do script ("rm " & c & "URL.txt") in schedTab
+	
 	do script ("cd $FILETREE/bin") in schedTab
 	if c = "Site" then
 		do script ("./update.pl -template=ir-local.css http://" & targetURL) in schedTab
@@ -93,9 +102,14 @@ tell application "Terminal"
 		do script ("./update.pl -template=ir-custom.css http://" & targetURL & "/" & shortname) in schedTab
 		do script ("./update.pl -template=index.html http://" & targetURL & "/" & shortname) in schedTab
 	end if
-	--end tell
 	
 	--Set simple configs
+	if c ≠ "Site" and headerOnly = "Yes" then
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='inherit_site_design' -VALUE=1") in schedTab
+	else
+		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "Configs.txt") in schedTab
+	end if
+	
 	set nav to (choose from list {"Above", "Below", "Hidden"} with prompt "Nav bar position?" default items "Below") as string
 	
 	set sidebar to button returned of (display dialog "Sidebar position?" buttons {"Left", "Right"}) as string
@@ -106,8 +120,6 @@ tell application "Terminal"
 		set publish_by_issue to button returned of (display dialog "Publish by closing issues?" buttons {"Yes", "No"}) as string
 	end if
 	
-	--tell application "Terminal"
-	do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "Configs.txt") in schedTab
 	if nav = "Above" then
 		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='NAV_UNDER' -VALUE=0") in schedTab
 	else if nav = "Below" then
@@ -135,7 +147,11 @@ tell application "Terminal"
 	end if
 end tell
 
-display dialog "If everything looks good, queue a non-immediate site-level update. 'Hi CS, I've updated the site level with the new design. Please go ahead and queue a recursive update if all looks good there. Please also follow the steps outlined on the DC Redesign Workflow page (https://elsevier.atlassian.net/wiki/spaces/RMCS/pages/119600947120520/DC+Redesign+Workflow#DCRedesignWorkflow-Site-MatchingStructures(IRredesignsonly)) to determine whether you need to file a separate SUP for any site-matching journals/event communities with custom banners.'"
+if c = "Site" then
+	display dialog "If everything looks good, queue a non-immediate site-level update. 'Hi CS, I've updated the site level with the new design (may need to hard-refresh). " & targetURL & "Please go ahead and queue a recursive update if all looks good there. Please also follow the steps outlined on the DC Redesign Workflow page (https://elsevier.atlassian.net/wiki/spaces/RMCS/pages/119600947120520/DC+Redesign+Workflow#DCRedesignWorkflow-Site-MatchingStructures(IRredesignsonly)) to determine whether you need to file a separate SUP for any site-matching journals/event communities with custom banners.'"
+else
+	display dialog "Hi CS, the new design is in place on the live site (may need to hard-refresh): " & targetURL & "/" & shortname
+end if
 
 on cdSchedAssets()
 	global c, targetURL, schedTab, shortname
