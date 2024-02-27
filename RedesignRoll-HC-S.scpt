@@ -148,7 +148,7 @@ tell application "Terminal"
 end tell
 
 if c = "Site" then
-	display dialog "If everything looks good, queue a non-immediate site-level update. 'Hi CS, I've updated the site level with the new design (may need to hard-refresh). " & targetURL & "Please go ahead and queue a recursive update if all looks good there. Please also follow the steps outlined on the DC Redesign Workflow page (https://elsevier.atlassian.net/wiki/spaces/RMCS/pages/119600947120520/DC+Redesign+Workflow#DCRedesignWorkflow-Site-MatchingStructures(IRredesignsonly)) to determine whether you need to file a separate SUP for any site-matching journals/event communities with custom banners.'"
+	display dialog "If everything looks good, queue a non-immediate site-level update. 'Hi CS, I've updated the site level with the new design (may need to hard-refresh). " & targetURL & "Please go ahead and queue a recursive update if all looks good there. Please also follow the steps outlined on the DC Redesign Workflow page https://elsevier.atlassian.net/wiki/spaces/RMCS/pages/119600947120520/DC+Redesign+Workflow#DCRedesignWorkflow-Site-MatchingStructures(IRredesignsonly) to determine whether you need to file a separate SUP for any site-matching journals/event communities with custom banners.'"
 else
 	display dialog "Hi CS, the new design is in place on the live site (may need to hard-refresh): " & targetURL & "/" & shortname
 end if
