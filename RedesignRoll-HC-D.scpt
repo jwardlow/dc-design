@@ -1,5 +1,5 @@
 (*
-This script automates most of the workflow for a redesign roll.
+This script was written for use with demo sites, which DC no longer uses. It automates most of the workflow for a redesign roll.
 It can move design assets between our demonstration and production instances.
 File paths need to be customized to your Mac before using.
 *)
