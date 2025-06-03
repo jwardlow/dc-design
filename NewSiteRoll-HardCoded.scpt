@@ -1,5 +1,5 @@
 (*
-This script automates most of the workflow for a brand-new DC site roll.
+This script was written for use with demo sites, which DC no longer uses. It automates most of the workflow for a brand-new DC site roll.
 It can move design assets between our demonstration and production instances,
 and set simple configurations using template documents on your Mac.
 File paths need to be customized to your Mac before using.
