@@ -1,5 +1,5 @@
 (*
-This script automates the more repetitive portions of the DC design implementation workflow.
+This script was written for use with demo sites, which DC no longer uses. It automates the more repetitive portions of the DC design implementation workflow.
 It can set up a new project folder on your Mac and copy templates to use in the implementation,
 upload assets to a demo site once they’re ready, and set simple configurations using the script
 set_config.pl. The file paths and username need to be customized to your Mac before using.
