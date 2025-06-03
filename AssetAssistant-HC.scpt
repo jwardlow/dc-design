@@ -39,9 +39,9 @@ if task = "Make new folder" then
 	
 	-- Set up a path to the "templates" folder for the appropriate context type. Everything in the templates folder will be copied into the new project folder, customize as desired
 	if c ≠ "Site" and headerOnly = "Yes" then
-		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates-header-only-sandbox/"
+		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates-header-only/"
 	else
-		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates-sandbox/"
+		set tfolder to "/Users/wardlowj/Design/Implementations/" & c & "s/" & c & "-templates/"
 	end if
 	
 	-- This variable will be used for renaming in case there's already a folder with the name we want to use, customize as desired
