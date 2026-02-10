@@ -131,6 +131,8 @@ tell application "Terminal"
 	
 	if c ≠ "Site" and headerOnly = "Yes" then
 		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='inherit_site_design' -VALUE=1") in schedTab
+		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='hide_journal_title' -VALUE=1") in schedTab
+		
 	else
 		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "Configs.txt") in schedTab
 	end if
