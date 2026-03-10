@@ -118,21 +118,24 @@ tell application "Terminal"
 	do script ("cp " & tmpPath & "* .") in schedTab
 	delay 5
 	
-	do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='invisible' -VALUE=0 -verbose") in schedTab
+	do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='invisible' -VALUE=0") in schedTab
 	delay 10
 	-- check if we got the right irShortname, option to change if not
 	set histText to history of schedTab
 	repeat until histText contains "build_configs_list: context_url:"
 		set irShortname to text returned of (display dialog "Config setting failed, change IR-level shortname?" default answer "") as string
-		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='invisible' -VALUE=0 -verbose") in schedTab
+		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='invisible' -VALUE=0") in schedTab
 		delay 5
 		set histText to history of schedTab
 	end repeat
 	
+	if c ≠ "Site" then
+		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='inherit_site_design' -VALUE=0") in schedTab
+	end if
+	
 	if c ≠ "Site" and headerOnly = "Yes" then
 		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='inherit_site_design' -VALUE=1") in schedTab
 		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='hide_journal_title' -VALUE=1") in schedTab
-		
 	else
 		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "Configs.txt") in schedTab
 	end if
