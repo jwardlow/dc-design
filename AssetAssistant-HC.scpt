@@ -119,15 +119,7 @@ tell application "Terminal"
 	delay 5
 	
 	do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='invisible' -VALUE=0") in schedTab
-	delay 10
-	-- check if we got the right irShortname, option to change if not
-	set histText to history of schedTab
-	repeat until histText contains "build_configs_list: context_url:"
-		set irShortname to text returned of (display dialog "Config setting failed, change IR-level shortname?" default answer "") as string
-		do script ("$FILETREE/bin/set_config.pl /home/jwardlow/tmp/" & shortname & "/" & c & "URL.txt -CONFIG='invisible' -VALUE=0") in schedTab
-		delay 5
-		set histText to history of schedTab
-	end repeat
+	delay 5
 	
 	if c ≠ "Site" then
 		do script ("$FILETREE/bin/set_config.pl " & tmpPath & c & "URL.txt -CONFIG='inherit_site_design' -VALUE=0") in schedTab
