@@ -138,6 +138,7 @@ tell application "Terminal"
 		do script ("$FILETREE/bin/set_config.pl /usr/bepress/production/log/" & shortname & "-assets/" & c & "URL.txt -CONFIG='publish_by_issue' -VALUE=1") in schedTab
 	end if
 	
+	
 	if c = "Site" then
 		do script ("python3 update-activity-by-year-pages.py") in schedTab
 	end if
